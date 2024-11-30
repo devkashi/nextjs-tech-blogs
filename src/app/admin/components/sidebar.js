@@ -3,6 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // Import useRouter from next/navigation
+import { useSelector, useDispatch } from "react-redux";
+import { resetState } from "../../store/login/loginSlice";
 import {
   FiHome,
   FiFileText,
@@ -13,12 +15,13 @@ import {
 
 const Sidebar = () => {
   const router = useRouter(); // Initialize the router hook
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
     // Remove token and user data from localStorage
     localStorage.removeItem("user_token");
     localStorage.removeItem("user_data");
-
+    dispatch(resetState());
     // Redirect to login page
     router.push("/admin/auth");
   };
