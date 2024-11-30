@@ -7,7 +7,7 @@ const Header = () => {
     <header className="flex items-center justify-between px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg">
       {/* Logo */}
       <div className="text-2xl font-extrabold tracking-wider">
-        Admin<span className="text-yellow-300">Dashboard</span>
+        Admin<span className="text-yellow-300"> Dashboard</span>
       </div>
 
       {/* Profile Section */}
