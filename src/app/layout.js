@@ -4,6 +4,8 @@ import { usePathname } from "next/navigation";
 import "./globals.css";
 import Header from "./frontend/components/header/header";
 import Footer from "./frontend/components/footer/footer";
+import { Provider } from "react-redux";
+import store from "./store/store";
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -28,7 +30,7 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <Provider store={store}>{children}</Provider>
       </body>
     </html>
   );

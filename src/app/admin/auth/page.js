@@ -1,10 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useRouter } from "next/navigation"; // Import the router hook
+import { sendLoginRequest } from "../../store/login/loginSlice";
 
 const AdminLoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
+  const dispatch = useDispatch();
+  const router = useRouter(); // Initialize the router hook
+  // Select login state from Redux store
+  const { status, error, message, data } = useSelector((state) => state.login);
+
+  // Check for token in localStorage on component load
+  useEffect(() => {
+    const token = localStorage.getItem("user_token"); // Replace "authToken" with your token key
+    if (token) {
+      router.push("/admin/pages/dashboard"); // Redirect to dashboard
+    }
+  }, [router]);
+
+  // Redirect to dashboard on successful login
+  useEffect(() => {
+    if (data.token) {
+      router.push("/admin/pages/dashboard");
+    }
+  }, [data, router]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -13,8 +35,8 @@ const AdminLoginPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log("Admin Login Data:", formData);
+    console.log("formData ", formData);
+    dispatch(sendLoginRequest(formData));
   };
 
   return (

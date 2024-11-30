@@ -1,14 +1,16 @@
 "use client";
 
 import React from "react";
-
+import Link from "next/link";
 const Header = () => {
   return (
     <header className="flex items-center justify-between px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white shadow-lg">
       {/* Logo */}
-      <div className="text-2xl font-extrabold tracking-wider">
-        Admin<span className="text-yellow-300"> Dashboard</span>
-      </div>
+      <Link href="/admin/pages/dashboard">
+        <div className="text-2xl font-extrabold tracking-wider">
+          Admin<span className="text-yellow-300"> Dashboard</span>
+        </div>
+      </Link>
 
       {/* Profile Section */}
       <div className="flex items-center space-x-4">
