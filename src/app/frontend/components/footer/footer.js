@@ -1,5 +1,5 @@
 import React from "react";
-
+import Link from "next/link";
 const Footer = () => {
   return (
     <footer className="bg-gray-800 text-white py-6">
@@ -18,12 +18,14 @@ const Footer = () => {
           >
             Privacy Policy
           </a>
-          <a
-            href="#terms"
+
+          <Link
+            href="/admin/auth"
             className="text-white hover:text-gray-300 text-sm transition"
           >
-            Terms of Service
-          </a>
+            Admin Login
+          </Link>
+
           <a
             href="#contact"
             className="text-white hover:text-gray-300 text-sm transition"
