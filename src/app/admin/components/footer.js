@@ -4,8 +4,11 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white text-center py-4">
-      <p>&copy; 2024 Admin Dashboard. All Rights Reserved.</p>
+    <footer className="bg-gray-800 text-gray-400 text-center py-6 mt-6 shadow-inner">
+      <p>
+        &copy; 2024 <span className="text-yellow-300">Admin Dashboard</span>.
+        All Rights Reserved.
+      </p>
     </footer>
   );
 };
