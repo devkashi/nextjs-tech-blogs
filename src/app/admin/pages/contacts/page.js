@@ -1,12 +1,7 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  useReactTable,
-  getCoreRowModel,
-  flexRender,
-} from "@tanstack/react-table";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import Link from "next/link";
 import { fetchMessagesRequest } from "../../../store/contact/contactSlice";
@@ -17,84 +12,27 @@ const ContactListPage = () => {
   // Fetch contact messages from the Redux store
   const {
     data: messages,
+    currentPage,
+    lastPage,
     totalCount,
+    perPage,
     status,
     error,
+    next_page_url,
   } = useSelector((state) => state.contact);
 
-  // Pagination state (maintained by the table instance)
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: "id",
-        header: "ID",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "title",
-        header: "Title",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "content",
-        header: "Content",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "date",
-        header: "Date",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "actions",
-        header: "Actions",
-        cell: ({ row }) => (
-          <div className="flex space-x-4">
-            <Link
-              href={`/admin/pages/blog/edit/${row.original.id}`}
-              className="text-blue-500 hover:text-blue-700"
-            >
-              <FiEdit className="inline-block text-xl" />
-            </Link>
-            <button
-              onClick={() => handleDelete(row.original.id)}
-              className="text-red-500 hover:text-red-700"
-            >
-              <FiTrash className="inline-block text-xl" />
-            </button>
-          </div>
-        ),
-      },
-    ],
-    []
-  );
+  // Pagination state
+  const [pageIndex, setPageIndex] = useState(currentPage - 1); // Zero-based index
+  const [pageSize, setPageSize] = useState(perPage);
 
-  const handleDelete = (id) => {
-    console.log(`Deleting blog with ID: ${id}`);
-  };
-
-  const table = useReactTable({
-    data: messages || [], // Use messages from Redux store
-    columns,
-    pageCount: Math.ceil(totalCount / 5), // Total number of pages
-    state: {
-      pagination: {
-        pageIndex: 0,
-        pageSize: 5,
-      },
-    },
-    manualPagination: true, // Use manual pagination for dynamic fetching
-    getCoreRowModel: getCoreRowModel(),
-    onPaginationChange: (paginationState) => {
-      const { pageIndex, pageSize } = paginationState;
-      dispatch(fetchMessagesRequest({ pageIndex, pageSize })); // Fetch the next page
-    },
-  });
-
-  // Fetch initial data on component mount
   useEffect(() => {
-    dispatch(fetchMessagesRequest({ pageIndex: 0, pageSize: 5 }));
-  }, [dispatch]);
+    dispatch(fetchMessagesRequest({ pageIndex: pageIndex + 1, pageSize }));
+  }, [dispatch, pageIndex, pageSize]);
+
+  // Handle page change
+  const handlePageChange = (newPageIndex) => {
+    setPageIndex(newPageIndex);
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -107,74 +45,83 @@ const ContactListPage = () => {
 
       <table className="min-w-full table-auto border-collapse rounded-lg bg-white shadow-md">
         <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="bg-gray-100">
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  colSpan={header.colSpan}
-                  className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b-2 border-gray-200"
-                >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext()
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
+          <tr className="bg-gray-100">
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b-2 border-gray-200">
+              ID
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b-2 border-gray-200">
+              Name
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b-2 border-gray-200">
+              Email
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b-2 border-gray-200">
+              Message
+            </th>
+            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b-2 border-gray-200">
+              Actions
+            </th>
+          </tr>
         </thead>
         <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-b hover:bg-gray-50">
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-6 py-4 text-sm text-gray-700">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+          {messages?.map((message) => (
+            <tr key={message.id} className="border-b hover:bg-gray-50">
+              <td className="px-6 py-4 text-sm text-gray-700">{message.id}</td>
+              <td className="px-6 py-4 text-sm text-gray-700">
+                {message.name}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-700">
+                {message.email}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-700">
+                {message.message}
+              </td>
+              <td className="px-6 py-4 text-sm text-gray-700">
+                <div className="flex space-x-4">
+                  <Link
+                    href={`/admin/pages/blog/edit/${message.id}`}
+                    className="text-blue-500 hover:text-blue-700"
+                  >
+                    <FiEdit className="inline-block text-xl" />
+                  </Link>
+                  <button
+                    onClick={() =>
+                      console.log(`Deleting message with ID: ${message.id}`)
+                    }
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <FiTrash className="inline-block text-xl" />
+                  </button>
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
 
       {/* Pagination Controls */}
-      <div className="mt-6 flex items-center justify-between">
+      <div className="mt-6 flex items-center justify-start space-x-4">
         <button
-          onClick={() => table.setPageIndex(0)}
-          disabled={!table.getCanPreviousPage()}
-          className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:opacity-50"
-        >
-          {"<<"}
-        </button>
-        <button
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
+          onClick={() => handlePageChange(pageIndex - 1)} // Previous page
+          disabled={pageIndex === 0}
           className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:opacity-50"
         >
           {"<"}
         </button>
         <span className="text-sm text-gray-600">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
+          Page {pageIndex + 1} of {lastPage}
         </span>
         <button
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
+          onClick={() => handlePageChange(pageIndex + 1)} // Next page
+          disabled={!next_page_url} // Disable "Next" if next_page_url is null
           className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:opacity-50"
         >
           {">"}
         </button>
-        <button
-          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-          disabled={!table.getCanNextPage()}
-          className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:opacity-50"
-        >
-          {">>"}
-        </button>
       </div>
 
       <div className="mt-4 text-sm text-gray-600">
-        Showing {table.getRowModel().rows.length} of {totalCount} rows
+        Showing {messages.length} of {totalCount} rows
       </div>
     </div>
   );

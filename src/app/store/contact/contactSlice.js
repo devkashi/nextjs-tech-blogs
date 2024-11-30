@@ -14,6 +14,11 @@ const initialState = {
   message: null,
   error: null,
   data: [], // To store the list of messages
+  currentPage: 1, // Start at page 1 (instead of 0)
+  lastPage: 1, // Set lastPage to 1 initially
+  totalCount: 0, // Initialize totalCount as 0
+  perPage: 10, // Set default perPage
+  next_page_url: null,
 };
 
 const contactSlice = createSlice({
@@ -51,7 +56,12 @@ const contactSlice = createSlice({
     },
     fetchMessagesSuccess: (state, action) => {
       state.status = STATUS_SUCCEEDED;
-      state.data = action.payload.data.messages;
+      state.data = action.payload.data.messages.data;
+      state.totalCount = action.payload.data.messages.total;
+      state.currentPage = action.payload.data.messages.current_page;
+      state.lastPage = action.payload.data.messages.last_page;
+      state.perPage = action.payload.data.messages.per_page;
+      state.next_page_url = action.payload.data.messages.next_page_url;
     },
     fetchMessagesFailure: (state, action) => {
       state.status = STATUS_FAILED;
