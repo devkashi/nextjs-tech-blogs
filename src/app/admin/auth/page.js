@@ -10,7 +10,6 @@ const AdminLoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const dispatch = useDispatch();
   const router = useRouter(); // Initialize the router hook
-  // Select login state from Redux store
   const { status, error, message, data } = useSelector((state) => state.login);
 
   // Check for token in localStorage on component load
@@ -20,13 +19,6 @@ const AdminLoginPage = () => {
       router.push("/admin/pages/dashboard"); // Redirect to dashboard
     }
   }, [router]);
-
-  // Redirect to dashboard on successful login
-  // useEffect(() => {
-  //   if (data.token) {
-  //     router.push("/admin/pages/dashboard");
-  //   }
-  // }, [data, router]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -93,13 +85,19 @@ const AdminLoginPage = () => {
               Login
             </button>
           </div>
-          {/* Forgot Password */}
-          <div className="text-center">
+          {/* Forgot Password and Back to Website */}
+          <div className="text-center mt-6">
             <Link
               href="/admin/forgot-password"
-              className="text-blue-600 hover:underline"
+              className="inline-block bg-gray-100 text-blue-600 font-medium px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition duration-300 mx-2"
             >
               Forgot Password?
+            </Link>
+            <Link
+              href="/"
+              className="inline-block bg-gray-100 text-green-600 font-medium px-4 py-2 rounded-lg hover:bg-green-600 hover:text-white transition duration-300 mx-2"
+            >
+              Back to Website
             </Link>
           </div>
         </form>
