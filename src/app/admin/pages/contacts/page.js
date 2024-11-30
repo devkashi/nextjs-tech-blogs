@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FiEdit, FiTrash } from "react-icons/fi";
-import Link from "next/link";
+
 import { fetchMessagesRequest } from "../../../store/contact/contactSlice";
 
 const ContactListPage = () => {
@@ -34,11 +34,22 @@ const ContactListPage = () => {
     setPageIndex(newPageIndex);
   };
 
+  // Handle Add Contact button click
+  const handleAddContact = () => {
+    //router.push("/admin/contact/add"); // Navigate to Add Contact page
+  };
+
   return (
     <div className="container mx-auto p-8">
-      <h1 className="text-4xl font-semibold mb-6 text-gray-800">
-        Messages List
-      </h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-semibold text-gray-800">Messages List</h1>
+        <button
+          onClick={handleAddContact} // Handle button click for adding contact
+          className="px-6 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition duration-300"
+        >
+          Add Contact
+        </button>
+      </div>
 
       {status === "loading" && (
         <div className="text-lg text-gray-600">Loading...</div>
@@ -73,12 +84,14 @@ const ContactListPage = () => {
               </td>
               <td className="px-6 py-4 text-sm text-gray-700">
                 <div className="flex space-x-4">
-                  <Link
-                    href={`/admin/pages/blog/edit/${message.id}`}
+                  <button
+                    onClick={() =>
+                      console.log(`Editing message with ID: ${message.id}`)
+                    }
                     className="text-blue-600 hover:text-blue-800 transition duration-200"
                   >
                     <FiEdit className="inline-block text-xl" />
-                  </Link>
+                  </button>
                   <button
                     onClick={() =>
                       console.log(`Deleting message with ID: ${message.id}`)
