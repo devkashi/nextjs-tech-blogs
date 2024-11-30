@@ -35,37 +35,32 @@ const ContactListPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-semibold mb-4 text-gray-800">
+    <div className="container mx-auto p-8">
+      <h1 className="text-4xl font-semibold mb-6 text-gray-800">
         Messages List
       </h1>
 
-      {status === "loading" && <div>Loading...</div>}
-      {error && <div className="text-red-500">{error}</div>}
+      {status === "loading" && (
+        <div className="text-lg text-gray-600">Loading...</div>
+      )}
+      {error && <div className="text-lg text-red-500">{error}</div>}
 
-      <table className="min-w-full table-auto border-collapse rounded-lg bg-white shadow-md">
+      <table className="min-w-full table-auto border-collapse rounded-lg bg-white shadow-lg overflow-hidden">
         <thead>
-          <tr className="bg-gray-100">
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b-2 border-gray-200">
-              ID
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b-2 border-gray-200">
-              Name
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b-2 border-gray-200">
-              Email
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b-2 border-gray-200">
-              Message
-            </th>
-            <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b-2 border-gray-200">
-              Actions
-            </th>
+          <tr className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+            <th className="px-6 py-4 text-left text-sm font-medium">ID</th>
+            <th className="px-6 py-4 text-left text-sm font-medium">Name</th>
+            <th className="px-6 py-4 text-left text-sm font-medium">Email</th>
+            <th className="px-6 py-4 text-left text-sm font-medium">Message</th>
+            <th className="px-6 py-4 text-left text-sm font-medium">Actions</th>
           </tr>
         </thead>
         <tbody>
           {messages?.map((message) => (
-            <tr key={message.id} className="border-b hover:bg-gray-50">
+            <tr
+              key={message.id}
+              className="border-b hover:bg-gray-50 transition duration-300"
+            >
               <td className="px-6 py-4 text-sm text-gray-700">{message.id}</td>
               <td className="px-6 py-4 text-sm text-gray-700">
                 {message.name}
@@ -80,7 +75,7 @@ const ContactListPage = () => {
                 <div className="flex space-x-4">
                   <Link
                     href={`/admin/pages/blog/edit/${message.id}`}
-                    className="text-blue-500 hover:text-blue-700"
+                    className="text-blue-600 hover:text-blue-800 transition duration-200"
                   >
                     <FiEdit className="inline-block text-xl" />
                   </Link>
@@ -88,7 +83,7 @@ const ContactListPage = () => {
                     onClick={() =>
                       console.log(`Deleting message with ID: ${message.id}`)
                     }
-                    className="text-red-500 hover:text-red-700"
+                    className="text-red-600 hover:text-red-800 transition duration-200"
                   >
                     <FiTrash className="inline-block text-xl" />
                   </button>
@@ -100,11 +95,11 @@ const ContactListPage = () => {
       </table>
 
       {/* Pagination Controls */}
-      <div className="mt-6 flex items-center justify-start space-x-4">
+      <div className="mt-8 flex items-center justify-center space-x-6">
         <button
           onClick={() => handlePageChange(pageIndex - 1)} // Previous page
           disabled={pageIndex === 0}
-          className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:opacity-50"
+          className="px-5 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 disabled:opacity-50 transition duration-300"
         >
           {"<"}
         </button>
@@ -113,15 +108,15 @@ const ContactListPage = () => {
         </span>
         <button
           onClick={() => handlePageChange(pageIndex + 1)} // Next page
-          disabled={!next_page_url} // Disable "Next" if next_page_url is null
-          className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:opacity-50"
+          disabled={!next_page_url}
+          className="px-5 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 disabled:opacity-50 transition duration-300"
         >
           {">"}
         </button>
       </div>
 
       <div className="mt-4 text-sm text-gray-600">
-        Showing {messages.length} of {totalCount} rows
+        Showing {messages.length} of {totalCount} messages
       </div>
     </div>
   );
