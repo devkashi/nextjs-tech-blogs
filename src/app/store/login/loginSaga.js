@@ -1,6 +1,6 @@
 import { call, put, all, takeEvery } from "redux-saga/effects";
 import axios from "axios";
-
+import { navigate } from "../../admin/utils/navigate";
 import {
   sendLoginRequest,
   sendLoginSuccess,
@@ -9,7 +9,6 @@ import {
 
 function* sendLoginSaga(action) {
   try {
-    console.log("Login Data:", action.payload);
     const response = yield call(
       axios.post,
       `http://127.0.0.1:8000/api/login`,
@@ -23,6 +22,9 @@ function* sendLoginSaga(action) {
     }
 
     yield put(sendLoginSuccess(response.data));
+
+    // Use router to navigate
+    navigate("/admin/pages/dashboard");
   } catch (error) {
     yield put(sendLoginFailure(error));
   }

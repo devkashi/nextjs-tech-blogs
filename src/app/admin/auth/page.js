@@ -22,11 +22,11 @@ const AdminLoginPage = () => {
   }, [router]);
 
   // Redirect to dashboard on successful login
-  useEffect(() => {
-    if (data.token) {
-      router.push("/admin/pages/dashboard");
-    }
-  }, [data, router]);
+  // useEffect(() => {
+  //   if (data.token) {
+  //     router.push("/admin/pages/dashboard");
+  //   }
+  // }, [data, router]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
