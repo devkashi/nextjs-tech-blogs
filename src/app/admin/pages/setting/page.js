@@ -74,40 +74,6 @@ const SettingsPage = () => {
             />
           </div>
 
-          {/* Theme Selection */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-600">
-              Theme
-            </label>
-            <select
-              name="theme"
-              value={settings.theme}
-              onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="light">Light</option>
-              <option value="dark">Dark</option>
-            </select>
-          </div>
-
-          {/* Email Notifications */}
-          <div className="mb-4 flex items-center">
-            <input
-              type="checkbox"
-              id="emailNotifications"
-              name="emailNotifications"
-              checked={settings.emailNotifications}
-              onChange={handleToggle}
-              className="mr-2"
-            />
-            <label
-              htmlFor="emailNotifications"
-              className="text-sm font-medium text-gray-600"
-            >
-              Enable Email Notifications
-            </label>
-          </div>
-
           {/* Save Button */}
           <div className="flex justify-end">
             <button

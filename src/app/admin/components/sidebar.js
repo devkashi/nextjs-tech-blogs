@@ -58,6 +58,16 @@ const Sidebar = () => {
                 </div>
               </Link>
             </li>
+
+            <li>
+              <Link href="/admin/pages/contacts">
+                <div className="flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-lg transition duration-200">
+                  <FiUsers className="text-xl" />
+                  <span className="font-medium">Contacts</span>
+                </div>
+              </Link>
+            </li>
+
             <li>
               <Link href="/admin/pages/setting">
                 <div className="flex items-center space-x-3 text-gray-700 hover:text-blue-600 hover:bg-blue-100 px-4 py-2 rounded-lg transition duration-200">

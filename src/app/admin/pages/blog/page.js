@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   useReactTable,
   getCoreRowModel,
