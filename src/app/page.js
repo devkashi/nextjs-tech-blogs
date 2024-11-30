@@ -1,5 +1,10 @@
-import Image from "next/image";
+import FrontendLayout from "./frontend/layout/frontendLayout";
 import HomePage from "./home/page";
+
 export default function Home() {
-  return <HomePage />;
+  return (
+    <FrontendLayout>
+      <HomePage />
+    </FrontendLayout>
+  );
 }

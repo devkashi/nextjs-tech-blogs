@@ -1,4 +1,6 @@
+"use client";
 import localFont from "next/font/local";
+import { usePathname } from "next/navigation";
 import "./globals.css";
 import Header from "./frontend/components/header/header";
 import Footer from "./frontend/components/footer/footer";
@@ -19,14 +21,14 @@ const geistMono = localFont({
 // };
 
 export default function RootLayout({ children }) {
+  const pathname = usePathname();
+  console.log("pathname ", pathname);
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header />
         {children}
-        <Footer />
       </body>
     </html>
   );
