@@ -67,7 +67,6 @@ const ContactListPage = () => {
   const handleEditModal = (oldFormValues) => {
     setActiveForm("UPDATE");
     setOldFormData(oldFormValues);
-    setActiveId(oldFormValues.id);
     setOpen2(true);
   };
   return (
@@ -181,7 +180,6 @@ const ContactListPage = () => {
       <ContactAddOrUpdateModal
         open={open2}
         setOpen={setOpen2}
-        id={activeId}
         cancelButtonName="Cancel"
         confirmButtonName="Submit"
         title="Create New Message"
