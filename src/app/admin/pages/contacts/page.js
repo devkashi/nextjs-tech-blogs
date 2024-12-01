@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import DeleteModal from "../../components/modal/confirmDelete";
+import ContactAddOrUpdateModal from "./components/ContactAddOrUpdateModal";
 import {
   fetchMessagesRequest,
   deleteMessageRequest,
@@ -30,6 +31,7 @@ const ContactListPage = () => {
   const [pageSize, setPageSize] = useState(perPage);
   // delete state
   const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
   const [activeId, setActiveId] = useState(false);
 
   useEffect(() => {
@@ -43,7 +45,7 @@ const ContactListPage = () => {
 
   // Handle Add Contact button click
   const handleAddContact = () => {
-    //router.push("/admin/contact/add"); // Navigate to Add Contact page
+    setOpen2(true);
   };
 
   // code to open the modal for delete
@@ -53,13 +55,10 @@ const ContactListPage = () => {
   };
   // // delete call through reducer action call
   const handleDelete = (id) => {
-    console.log("id dj ", id);
     dispatch(deleteMessageRequest(id));
     if (status === STATUS_SUCCEEDED) {
       dispatch(fetchMessagesRequest({ pageIndex: pageIndex, pageSize }));
     }
-
-    // setOpen(false);
   };
   return (
     <div className="container mx-auto p-8">
@@ -169,6 +168,18 @@ const ContactListPage = () => {
         title="Delete Message"
         contents="Are you sure you want to delete this message?"
         handleDelete={handleDelete}
+      />
+
+      <ContactAddOrUpdateModal
+        open={open2}
+        setOpen={setOpen2}
+        id={activeId}
+        cancelButtonName="Cancel"
+        confirmButtonName="Submit"
+        title="Create New Message"
+        contents="Please fill in the form below to create a new message."
+        pageIndex={pageIndex}
+        pageSize={pageSize}
       />
     </div>
   );

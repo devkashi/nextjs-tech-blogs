@@ -37,17 +37,14 @@ const contactSlice = createSlice({
       state.error = null;
     },
     sendMessageSuccess: (state, action) => {
-      console.log("action.payload ", action.payload);
       state.status = STATUS_SUCCEEDED;
       state.message = action.payload.message;
       state.error = null;
-      state.data = action.payload.data;
     },
     sendMessageFailure: (state, action) => {
       state.status = STATUS_FAILED;
       state.message = null;
       state.error = action.payload.error || ERROR_MESSAGE_DEFAULT;
-      state.data = [];
     },
 
     fetchMessagesRequest: (state) => {
