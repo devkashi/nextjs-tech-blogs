@@ -33,6 +33,8 @@ const ContactListPage = () => {
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [activeId, setActiveId] = useState(false);
+  const [oldFormData, setOldFormData] = useState({});
+  const [activeForm, setActiveForm] = useState("ADD");
 
   useEffect(() => {
     dispatch(fetchMessagesRequest({ pageIndex: pageIndex + 1, pageSize }));
@@ -45,6 +47,7 @@ const ContactListPage = () => {
 
   // Handle Add Contact button click
   const handleAddContact = () => {
+    setActiveForm("ADD");
     setOpen2(true);
   };
 
@@ -59,6 +62,13 @@ const ContactListPage = () => {
     if (status === STATUS_SUCCEEDED) {
       dispatch(fetchMessagesRequest({ pageIndex: pageIndex, pageSize }));
     }
+  };
+
+  const handleEditModal = (oldFormValues) => {
+    setActiveForm("UPDATE");
+    setOldFormData(oldFormValues);
+    setActiveId(oldFormValues.id);
+    setOpen2(true);
   };
   return (
     <div className="container mx-auto p-8">
@@ -107,9 +117,7 @@ const ContactListPage = () => {
                 <div className="flex space-x-4">
                   {/* edit  */}
                   <button
-                    onClick={() =>
-                      console.log(`Editing message with ID: ${message.id}`)
-                    }
+                    onClick={() => handleEditModal(message)}
                     className="text-blue-600 hover:text-blue-800 transition duration-200"
                   >
                     <FiEdit className="inline-block text-xl" />
@@ -180,6 +188,8 @@ const ContactListPage = () => {
         contents="Please fill in the form below to create a new message."
         pageIndex={pageIndex}
         pageSize={pageSize}
+        oldFormData={oldFormData}
+        activeForm={activeForm}
       />
     </div>
   );

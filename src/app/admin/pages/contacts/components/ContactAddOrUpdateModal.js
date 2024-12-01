@@ -11,6 +11,7 @@ import {
 import {
   sendMessageRequest,
   fetchMessagesRequest,
+  updateMessageRequest,
 } from "../../../../store/contact/contactSlice";
 import { STATUS_SUCCEEDED } from "../../../../admin/constants/status";
 
@@ -24,6 +25,8 @@ export default function ContactAddOrUpdateModal({
   contents,
   pageIndex,
   pageSize,
+  oldFormData,
+  activeForm,
 }) {
   const dispatch = useDispatch();
 
@@ -36,6 +39,18 @@ export default function ContactAddOrUpdateModal({
   // Fetch contact messages from the Redux store
   const { status } = useSelector((state) => state.contact);
 
+  useEffect(() => {
+    if (activeForm === "UPDATE") {
+      setFormData(oldFormData);
+    } else {
+      setFormData({
+        name: "",
+        email: "",
+        message: "",
+      });
+    }
+  }, [activeForm, oldFormData]);
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -45,7 +60,12 @@ export default function ContactAddOrUpdateModal({
   };
 
   const handleFormSubmit = () => {
-    dispatch(sendMessageRequest(formData));
+    if (activeForm === "UPDATE") {
+      dispatch(updateMessageRequest(formData));
+    } else {
+      dispatch(sendMessageRequest(formData));
+    }
+
     if (status === STATUS_SUCCEEDED) {
       dispatch(fetchMessagesRequest({ pageIndex: pageIndex, pageSize }));
     }
