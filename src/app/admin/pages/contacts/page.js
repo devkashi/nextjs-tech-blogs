@@ -4,8 +4,12 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import DeleteModal from "../../components/modal/confirmDelete";
-import { fetchMessagesRequest } from "../../../store/contact/contactSlice";
-import deleteMessageRequest from "../../../store/contact/contactSlice";
+import {
+  fetchMessagesRequest,
+  deleteMessageRequest,
+} from "../../../store/contact/contactSlice";
+import { STATUS_SUCCEEDED } from "../../constants/status";
+
 const ContactListPage = () => {
   const dispatch = useDispatch();
 
@@ -51,6 +55,10 @@ const ContactListPage = () => {
   const handleDelete = (id) => {
     console.log("id dj ", id);
     dispatch(deleteMessageRequest(id));
+    if (status === STATUS_SUCCEEDED) {
+      dispatch(fetchMessagesRequest({ pageIndex: pageIndex, pageSize }));
+    }
+
     // setOpen(false);
   };
   return (
