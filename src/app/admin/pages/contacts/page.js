@@ -3,9 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { FiEdit, FiTrash } from "react-icons/fi";
-
+import DeleteModal from "../../components/modal/confirmDelete";
 import { fetchMessagesRequest } from "../../../store/contact/contactSlice";
-
+import deleteMessageRequest from "../../../store/contact/contactSlice";
 const ContactListPage = () => {
   const dispatch = useDispatch();
 
@@ -24,6 +24,9 @@ const ContactListPage = () => {
   // Pagination state
   const [pageIndex, setPageIndex] = useState(currentPage - 1); // Zero-based index
   const [pageSize, setPageSize] = useState(perPage);
+  // delete state
+  const [open, setOpen] = useState(false);
+  const [activeId, setActiveId] = useState(false);
 
   useEffect(() => {
     dispatch(fetchMessagesRequest({ pageIndex: pageIndex + 1, pageSize }));
@@ -39,6 +42,17 @@ const ContactListPage = () => {
     //router.push("/admin/contact/add"); // Navigate to Add Contact page
   };
 
+  // code to open the modal for delete
+  const handleDeleteModal = (id) => {
+    setActiveId(id);
+    setOpen(true);
+  };
+  // // delete call through reducer action call
+  const handleDelete = (id) => {
+    console.log("id dj ", id);
+    dispatch(deleteMessageRequest(id));
+    // setOpen(false);
+  };
   return (
     <div className="container mx-auto p-8">
       <div className="flex justify-between items-center mb-6">
@@ -84,6 +98,7 @@ const ContactListPage = () => {
               </td>
               <td className="px-6 py-4 text-sm text-gray-700">
                 <div className="flex space-x-4">
+                  {/* edit  */}
                   <button
                     onClick={() =>
                       console.log(`Editing message with ID: ${message.id}`)
@@ -92,10 +107,12 @@ const ContactListPage = () => {
                   >
                     <FiEdit className="inline-block text-xl" />
                   </button>
+                  {/* delete */}
                   <button
-                    onClick={() =>
-                      console.log(`Deleting message with ID: ${message.id}`)
-                    }
+                    // onClick={() =>
+                    //   console.log(`Editing message with ID: ${message.id}`)
+                    // }
+                    onClick={() => handleDeleteModal(message.id)}
                     className="text-red-600 hover:text-red-800 transition duration-200"
                   >
                     <FiTrash className="inline-block text-xl" />
@@ -131,6 +148,20 @@ const ContactListPage = () => {
       <div className="mt-4 text-sm text-gray-600">
         Showing {messages.length} of {totalCount} messages
       </div>
+
+      {/* modal */}
+
+      {/* delete modal */}
+      <DeleteModal
+        open={open}
+        setOpen={setOpen}
+        id={activeId}
+        cancelButtonName="Cancel"
+        confirmButtonName="Delete"
+        title="Delete Message"
+        contents="Are you sure you want to delete this message?"
+        handleDelete={handleDelete}
+      />
     </div>
   );
 };

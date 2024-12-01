@@ -69,10 +69,12 @@ const contactSlice = createSlice({
     },
 
     deleteMessageRequest: (state, action) => {
+      console.log("deleteMessageRequest action:", action);
       state.status = STATUS_PENDING;
       state.error = null;
     },
     deleteMessageSuccess: (state, action) => {
+      console.log("deleteMessageSuccess payload:", action.payload);
       state.status = STATUS_SUCCEEDED;
       state.message = action.payload.message;
       // Remove the deleted message from the state
