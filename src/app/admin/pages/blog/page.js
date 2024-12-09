@@ -2,268 +2,190 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import DeleteModal from "../../components/modal/confirmDelete";
+import BlogAddOrUpdateModal from "./components/BlogAddOrUpdateModal.js";
+
 import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getPaginationRowModel,
-  flexRender,
-} from "@tanstack/react-table";
+  fetchBlogRequest,
+  deleteBlogRequest,
+} from "../../../store/blog/blogSlice";
+import { STATUS_SUCCEEDED } from "../../constants/status";
+
 import { FiEdit, FiTrash } from "react-icons/fi";
 import Link from "next/link";
 
 const BlogListPage = () => {
-  // Sample blog data
-  const [blogs, setBlogs] = useState([
-    {
-      id: 1,
-      title: "First Blog",
-      content: "This is the first blog",
-      date: "2024-11-30",
-    },
-    {
-      id: 2,
-      title: "Second Blog",
-      content: "This is the second blog",
-      date: "2024-11-29",
-    },
-    {
-      id: 3,
-      title: "Third Blog",
-      content: "This is the third blog",
-      date: "2024-11-28",
-    },
-    {
-      id: 4,
-      title: "Fourth Blog",
-      content: "This is the fourth blog",
-      date: "2024-11-27",
-    },
-    {
-      id: 5,
-      title: "Fifth Blog",
-      content: "This is the fifth blog",
-      date: "2024-11-26",
-    },
-    {
-      id: 6,
-      title: "First Blog",
-      content: "This is the first blog",
-      date: "2024-11-30",
-    },
-    {
-      id: 7,
-      title: "Second Blog",
-      content: "This is the second blog",
-      date: "2024-11-29",
-    },
-    {
-      id: 8,
-      title: "Third Blog",
-      content: "This is the third blog",
-      date: "2024-11-28",
-    },
-    {
-      id: 9,
-      title: "Fourth Blog",
-      content: "This is the fourth blog",
-      date: "2024-11-27",
-    },
-    {
-      id: 10,
-      title: "Fifth Blog",
-      content: "This is the fifth blog",
-      date: "2024-11-26",
-    },
-  ]);
+  const dispatch = useDispatch();
 
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: "id",
-        header: "ID",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "title",
-        header: "Title",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "content",
-        header: "Content",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "date",
-        header: "Date",
-        footer: (props) => props.column.id,
-      },
-      {
-        accessorKey: "actions",
-        header: "Actions",
-        cell: ({ row }) => (
-          <div className="flex space-x-4">
-            <Link
-              href={`/admin/pages/blog/edit/${row.original.id}`}
-              className="text-blue-500 hover:text-blue-700"
-            >
-              <FiEdit className="inline-block text-xl" />
-            </Link>
-            <button
-              onClick={() => handleDelete(row.original.id)}
-              className="text-red-500 hover:text-red-700"
-            >
-              <FiTrash className="inline-block text-xl" />
-            </button>
-          </div>
-        ),
-      },
-    ],
-    []
-  );
+  // Fetch contact messages from the Redux store
+  const {
+    data: blog,
+    currentPage,
+    lastPage,
+    totalCount,
+    perPage,
+    status,
+    error,
+    next_page_url,
+  } = useSelector((state) => state.blog);
 
-  const handleDelete = (id) => {
-    setBlogs((prevBlogs) => prevBlogs.filter((blog) => blog.id !== id));
+  // Pagination state
+  const [pageIndex, setPageIndex] = useState(currentPage - 1); // Zero-based index
+  const [pageSize, setPageSize] = useState(perPage);
+  // delete state
+  const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
+  const [activeId, setActiveId] = useState(false);
+  const [oldFormData, setOldFormData] = useState({});
+  const [activeForm, setActiveForm] = useState("ADD");
+
+  useEffect(() => {
+    dispatch(fetchBlogRequest({ pageIndex: pageIndex + 1, pageSize }));
+  }, [dispatch, pageIndex, pageSize]);
+
+  // Handle page change
+  const handlePageChange = (newPageIndex) => {
+    setPageIndex(newPageIndex);
   };
 
-  const [pagination, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 5,
-  });
+  // Handle Add Contact button click
+  const handleAddBlog = () => {
+    setActiveForm("ADD");
+    setOpen2(true);
+  };
 
-  const table = useReactTable({
-    columns,
-    data: blogs,
-    debugTable: true,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination,
-    state: {
-      pagination,
-    },
-  });
+  // code to open the modal for delete
+  const handleDeleteModal = (id) => {
+    setActiveId(id);
+    setOpen(true);
+  };
+  // // delete call through reducer action call
+  const handleDelete = (id) => {
+    dispatch(deleteBlogRequest(id));
+    if (status === STATUS_SUCCEEDED) {
+      dispatch(fetchBlogRequest({ pageIndex: pageIndex, pageSize }));
+    }
+  };
+
+  const handleEditModal = (oldFormValues) => {
+    setActiveForm("UPDATE");
+    setOldFormData(oldFormValues);
+    setOpen2(true);
+  };
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-3xl font-semibold mb-4 text-gray-800">Blog List</h1>
+    <div className="container mx-auto p-8">
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-semibold text-gray-800">Blog List</h1>
+        <button
+          onClick={handleAddBlog} // Handle button click for adding contact
+          className="px-6 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 transition duration-300"
+        >
+          Add Contact
+        </button>
+      </div>
 
-      <table className="min-w-full table-auto border-collapse rounded-lg bg-white shadow-md">
+      {status === "loading" && (
+        <div className="text-lg text-gray-600">Loading...</div>
+      )}
+      {error && <div className="text-lg text-red-500">{error}</div>}
+
+      <table className="min-w-full table-auto border-collapse rounded-lg bg-white shadow-lg overflow-hidden">
         <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="bg-gray-100">
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  colSpan={header.colSpan}
-                  className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b-2 border-gray-200"
-                >
-                  <div
-                    {...{
-                      className: header.column.getCanSort()
-                        ? "cursor-pointer select-none"
-                        : "",
-                      onClick: header.column.getToggleSortingHandler(),
-                    }}
-                  >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    {header.column.getIsSorted() === "asc"
-                      ? " 🔼"
-                      : header.column.getIsSorted() === "desc"
-                      ? " 🔽"
-                      : null}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          ))}
+          <tr className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white">
+            <th className="px-6 py-4 text-left text-sm font-medium">ID</th>
+            <th className="px-6 py-4 text-left text-sm font-medium">Title </th>
+            <th className="px-6 py-4 text-left text-sm font-medium">Content</th>
+            <th className="px-6 py-4 text-left text-sm font-medium">status</th>
+            <th className="px-6 py-4 text-left text-sm font-medium">Actions</th>
+          </tr>
         </thead>
         <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-b hover:bg-gray-50">
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-6 py-4 text-sm text-gray-700">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+          {blog?.map((blg) => (
+            <tr
+              key={blg.id}
+              className="border-b hover:bg-gray-50 transition duration-300"
+            >
+              <td className="px-6 py-4 text-sm text-gray-700">{blg.id}</td>
+              <td className="px-6 py-4 text-sm text-gray-700">{blg.title}</td>
+              <td className="px-6 py-4 text-sm text-gray-700">{blg.content}</td>
+              <td className="px-6 py-4 text-sm text-gray-700">{blg.status}</td>
+              <td className="px-6 py-4 text-sm text-gray-700">
+                <div className="flex space-x-4">
+                  {/* edit  */}
+                  <button
+                    onClick={() => handleEditModal(blg)}
+                    className="text-blue-600 hover:text-blue-800 transition duration-200"
+                  >
+                    <FiEdit className="inline-block text-xl" />
+                  </button>
+                  {/* delete */}
+                  <button
+                    // onClick={() =>
+                    //   console.log(`Editing message with ID: ${message.id}`)
+                    // }
+                    onClick={() => handleDeleteModal(blg.id)}
+                    className="text-red-600 hover:text-red-800 transition duration-200"
+                  >
+                    <FiTrash className="inline-block text-xl" />
+                  </button>
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
 
       {/* Pagination Controls */}
-      <div className="mt-6 flex items-center justify-between">
-        <div className="flex space-x-2">
-          <button
-            onClick={() => table.firstPage()}
-            disabled={!table.getCanPreviousPage()}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:opacity-50"
-          >
-            {"<<"}
-          </button>
-          <button
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:opacity-50"
-          >
-            {"<"}
-          </button>
-          <button
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:opacity-50"
-          >
-            {">"}
-          </button>
-          <button
-            onClick={() => table.lastPage()}
-            disabled={!table.getCanNextPage()}
-            className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:opacity-50"
-          >
-            {">>"}
-          </button>
-        </div>
-
-        <span className="text-sm text-gray-600">
-          Page{" "}
-          <strong>
-            {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
-          </strong>
-        </span>
-
-        <span className="text-sm text-gray-600">
-          | Go to page:
-          <input
-            type="number"
-            min="1"
-            max={table.getPageCount()}
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            onChange={(e) => table.setPageIndex(Number(e.target.value) - 1)}
-            className="border border-gray-300 p-1 rounded-md w-16 text-sm"
-          />
-        </span>
-
-        <select
-          value={table.getState().pagination.pageSize}
-          onChange={(e) => table.setPageSize(Number(e.target.value))}
-          className="border border-gray-300 p-1 rounded-md text-sm"
+      <div className="mt-8 flex items-center justify-center space-x-6">
+        <button
+          onClick={() => handlePageChange(pageIndex - 1)} // Previous page
+          disabled={pageIndex === 0}
+          className="px-5 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 disabled:opacity-50 transition duration-300"
         >
-          {[5, 10, 15, 20].map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              Show {pageSize}
-            </option>
-          ))}
-        </select>
+          {"<"}
+        </button>
+        <span className="text-sm text-gray-600">
+          Page {pageIndex + 1} of {lastPage}
+        </span>
+        <button
+          onClick={() => handlePageChange(pageIndex + 1)} // Next page
+          disabled={!next_page_url}
+          className="px-5 py-2 bg-indigo-600 text-white rounded-full hover:bg-indigo-700 disabled:opacity-50 transition duration-300"
+        >
+          {">"}
+        </button>
       </div>
 
       <div className="mt-4 text-sm text-gray-600">
-        Showing {table.getRowModel().rows.length} of {blogs.length} rows
+        Showing {blog.length} of {totalCount} messages
       </div>
+
+      {/* modal */}
+
+      <DeleteModal
+        open={open}
+        setOpen={setOpen}
+        id={activeId}
+        cancelButtonName="Cancel"
+        confirmButtonName="Delete"
+        title="Delete Message"
+        contents="Are you sure you want to delete this blog?"
+        handleDelete={handleDelete}
+      />
+
+      <BlogAddOrUpdateModal
+        open={open2}
+        setOpen={setOpen2}
+        cancelButtonName="Cancel"
+        confirmButtonName="Submit"
+        title="Create New Blog"
+        contents="Please fill in the form below to create a new blog."
+        pageIndex={pageIndex}
+        pageSize={pageSize}
+        oldFormData={oldFormData}
+        activeForm={activeForm}
+      />
     </div>
   );
 };

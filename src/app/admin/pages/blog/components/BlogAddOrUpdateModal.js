@@ -8,19 +8,18 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/react";
-import {
-  sendMessageRequest,
-  fetchMessagesRequest,
-  updateMessageRequest,
-} from "../../../../store/contact/contactSlice";
-import { STATUS_SUCCEEDED } from "../../../../admin/constants/status";
-import { toast } from "react-toastify";
 
+import { STATUS_SUCCEEDED } from "../../../constants/status";
+import { toast } from "react-toastify";
+import {
+  sendBlogRequest,
+  updateBlogRequest,
+} from "../../../../store/blog/blogSlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AlertComponent from "../../../components/alert/alert";
 
-export default function ContactAddOrUpdateModal({
+export default function BlogAddOrUpdateModal({
   open,
   setOpen,
   cancelButtonName,
@@ -35,21 +34,21 @@ export default function ContactAddOrUpdateModal({
   const dispatch = useDispatch();
 
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
+    title: "",
+    image: "",
+    content: "",
   });
 
-  const { status, message, error } = useSelector((state) => state.contact);
+  const { status, message, error } = useSelector((state) => state.blog);
 
   useEffect(() => {
     if (activeForm === "UPDATE") {
       setFormData(oldFormData);
     } else {
       setFormData({
-        name: "",
-        email: "",
-        message: "",
+        title: "",
+        image: "",
+        content: "",
       });
     }
   }, [activeForm, oldFormData]);
@@ -63,31 +62,31 @@ export default function ContactAddOrUpdateModal({
   };
 
   const handleFormSubmit = () => {
-    if (!formData.name || !formData.email || !formData.message) {
+    if (!formData.title || !formData.image || !formData.content) {
       toast.error("All fields are required.");
       return;
     }
 
     if (activeForm === "UPDATE") {
-      dispatch(updateMessageRequest(formData));
+      dispatch(updateBlogRequest(formData));
       if (status === STATUS_SUCCEEDED) {
-        toast.success("Message updated successfully!");
+        toast.success("Blog updated successfully!");
       }
     } else {
-      dispatch(sendMessageRequest(formData));
+      dispatch(sendBlogRequest(formData));
       if (status === STATUS_SUCCEEDED) {
-        toast.success("Message added successfully!");
+        toast.success("Blog added successfully!");
       }
     }
 
     if (status === STATUS_SUCCEEDED) {
-      dispatch(fetchMessagesRequest({ pageIndex: pageIndex, pageSize }));
+      dispatch(fetchBlogRequest({ pageIndex: pageIndex, pageSize }));
     }
 
     setFormData({
-      name: "",
-      email: "",
-      message: "",
+      title: "",
+      image: "",
+      content: "",
     });
     setOpen(false);
   };
@@ -118,13 +117,13 @@ export default function ContactAddOrUpdateModal({
                         htmlFor="name"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Name
+                        Title
                       </label>
                       <input
                         type="text"
-                        id="name"
-                        name="name"
-                        value={formData.name}
+                        id="title"
+                        name="title"
+                        value={formData.title}
                         onChange={handleInputChange}
                         className="w-full mt-1 block rounded-md border border-gray-300 bg-gray-50 px-4 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-300"
                       />
@@ -132,32 +131,32 @@ export default function ContactAddOrUpdateModal({
                     {/* Email Field */}
                     <div className="mb-4">
                       <label
-                        htmlFor="email"
+                        htmlFor="image"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Email
+                        Upload Image
                       </label>
                       <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        value={formData.email}
+                        type="file"
+                        id="image"
+                        name="image"
                         onChange={handleInputChange}
                         className="w-full mt-1 block rounded-md border border-gray-300 bg-gray-50 px-4 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-300"
                       />
                     </div>
+
                     {/* Message Field */}
                     <div className="mb-4">
                       <label
-                        htmlFor="message"
+                        htmlFor="content"
                         className="block text-sm font-medium text-gray-700"
                       >
-                        Message
+                        content
                       </label>
                       <textarea
-                        id="message"
-                        name="message"
-                        value={formData.message}
+                        id="content"
+                        name="content"
+                        value={formData.content}
                         onChange={handleInputChange}
                         rows={4}
                         className="w-full mt-1 block rounded-md border border-gray-300 bg-gray-50 px-4 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-300"
