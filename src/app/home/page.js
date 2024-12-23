@@ -1,30 +1,21 @@
 "use client";
-import React from "react";
 import Link from "next/link";
+import React, { useState, useEffect, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
 
+// import {
+//   fetchBlogRequest,
+//   deleteBlogRequest,
+//   resetState,
+// } from "../../../store/blog/blogSlice";
+// import { STATUS_SUCCEEDED } from "../../constants/status";
 const HomePage = () => {
-  const blogs = [
-    {
-      id: 1,
-      title: "Understanding React Lifecycle",
-      image: "https://via.placeholder.com/300x200",
-    },
-    {
-      id: 2,
-      title: "Top 10 JavaScript Libraries in 2024",
-      image: "https://via.placeholder.com/300x200",
-    },
-    {
-      id: 3,
-      title: "CSS Grid vs Flexbox: When to Use Which?",
-      image: "https://via.placeholder.com/300x200",
-    },
-    {
-      id: 4,
-      title: "Mastering Laravel for Backend Development",
-      image: "https://via.placeholder.com/300x200",
-    },
-  ];
+  const {
+    data: blogs,
+    status,
+    error,
+    image_path,
+  } = useSelector((state) => state.blog);
 
   const popularBlogs = [
     {
@@ -56,9 +47,18 @@ const HomePage = () => {
             <Link key={blog.id} href={`/blog/${blog.id}`}>
               <div className="cursor-pointer bg-white shadow-md rounded-md overflow-hidden">
                 <img
-                  src={blog.image}
-                  alt={blog.title}
-                  className="w-full h-40 object-cover"
+                  src={
+                    blog.image instanceof File
+                      ? URL.createObjectURL(blog.image) // Preview for new uploads
+                      : `${image_path}/${blog.image}` // Existing image path from server
+                  }
+                  alt="Uploaded preview"
+                  className="mt-2 rounded border border-gray-300 shadow-sm"
+                  style={{
+                    width: "50%", // Set desired width
+                    height: "50%", // Set desired height
+                    // objectFit: "cover", // Ensures image fits within the dimensions
+                  }}
                 />
                 <div className="p-4">
                   <h2 className="text-lg font-semibold hover:text-blue-600 transition">

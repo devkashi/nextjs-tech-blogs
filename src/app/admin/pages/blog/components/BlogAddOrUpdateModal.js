@@ -14,6 +14,8 @@ import { toast } from "react-toastify";
 import {
   sendBlogRequest,
   updateBlogRequest,
+  fetchBlogRequest,
+  resetState,
 } from "../../../../store/blog/blogSlice";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -39,7 +41,9 @@ export default function BlogAddOrUpdateModal({
     content: "",
   });
 
-  const { status, message, error } = useSelector((state) => state.blog);
+  const { status, message, error, image_path } = useSelector(
+    (state) => state.blog
+  );
 
   useEffect(() => {
     if (activeForm === "UPDATE") {
@@ -69,11 +73,13 @@ export default function BlogAddOrUpdateModal({
 
     if (activeForm === "UPDATE") {
       dispatch(updateBlogRequest(formData));
+
       if (status === STATUS_SUCCEEDED) {
         toast.success("Blog updated successfully!");
       }
     } else {
       dispatch(sendBlogRequest(formData));
+
       if (status === STATUS_SUCCEEDED) {
         toast.success("Blog added successfully!");
       }
@@ -90,7 +96,16 @@ export default function BlogAddOrUpdateModal({
     });
     setOpen(false);
   };
+  const handleFileInputChange = (event) => {
+    const file = event.target.files[0];
+    setFormData((prev) => ({
+      ...prev,
+      image: file, // Save the file object to the state
+    }));
+  };
 
+  console.log("oldformdata ", oldFormData);
+  console.log("iamgePath ", image_path);
   return (
     <Dialog open={open} onClose={setOpen} className="relative z-10">
       <DialogBackdrop
@@ -128,7 +143,7 @@ export default function BlogAddOrUpdateModal({
                         className="w-full mt-1 block rounded-md border border-gray-300 bg-gray-50 px-4 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-300"
                       />
                     </div>
-                    {/* Email Field */}
+                    {/* image Field */}
                     <div className="mb-4">
                       <label
                         htmlFor="image"
@@ -140,9 +155,25 @@ export default function BlogAddOrUpdateModal({
                         type="file"
                         id="image"
                         name="image"
-                        onChange={handleInputChange}
+                        onChange={handleFileInputChange}
                         className="w-full mt-1 block rounded-md border border-gray-300 bg-gray-50 px-4 py-2 text-sm shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-300"
                       />
+                      {formData.image && (
+                        <img
+                          src={
+                            formData.image instanceof File
+                              ? URL.createObjectURL(formData.image) // Preview for new uploads
+                              : `${image_path}/${formData.image}` // Existing image path from server
+                          }
+                          alt="Uploaded preview"
+                          className="mt-2 rounded border border-gray-300 shadow-sm"
+                          style={{
+                            width: "200px", // Set desired width
+                            height: "250px", // Set desired height
+                            // objectFit: "cover", // Ensures image fits within the dimensions
+                          }}
+                        />
+                      )}
                     </div>
 
                     {/* Message Field */}

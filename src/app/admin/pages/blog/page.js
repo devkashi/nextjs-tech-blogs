@@ -8,6 +8,7 @@ import BlogAddOrUpdateModal from "./components/BlogAddOrUpdateModal.js";
 import {
   fetchBlogRequest,
   deleteBlogRequest,
+  resetState,
 } from "../../../store/blog/blogSlice";
 import { STATUS_SUCCEEDED } from "../../constants/status";
 
@@ -38,6 +39,11 @@ const BlogListPage = () => {
   const [activeId, setActiveId] = useState(false);
   const [oldFormData, setOldFormData] = useState({});
   const [activeForm, setActiveForm] = useState("ADD");
+  const [title, setTitle] = useState("ADD Blog");
+  //  to reset all state by default
+  useEffect(() => {
+    dispatch(resetState());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(fetchBlogRequest({ pageIndex: pageIndex + 1, pageSize }));
@@ -69,6 +75,7 @@ const BlogListPage = () => {
 
   const handleEditModal = (oldFormValues) => {
     setActiveForm("UPDATE");
+
     setOldFormData(oldFormValues);
     setOpen2(true);
   };

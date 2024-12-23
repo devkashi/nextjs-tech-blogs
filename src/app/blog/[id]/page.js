@@ -1,21 +1,30 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect, useMemo } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "next/navigation";
 import FrontendLayout from "@/app/frontend/layout/frontendLayout";
+import { fetchSingleBlogRequest } from "../../store/blog/blogSlice";
 
 const BlogDetailPage = () => {
-  const { id } = useParams(); // Get the dynamic 'id' parameter
+  const {
+    data: blogs,
+    status,
+    error,
+    single_image_path,
+    single_blog_data,
+  } = useSelector((state) => state.blog);
 
+  const { id } = useParams(); // Get the dynamic 'id' parameter
+  console.log("id ", id);
+  console.log("single_image_path ", single_image_path);
+  console.log("single_blog_data ", single_blog_data);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    console.log("single id ", id);
+    dispatch(fetchSingleBlogRequest(id));
+  }, [dispatch, id]);
   // Sample blog data (to be fetched dynamically in a real scenario)
-  const blog = {
-    id: id,
-    title: `Blog Post #${id}`,
-    image: "https://via.placeholder.com/800x400",
-    content: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-              Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-              Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris 
-              nisi ut aliquip ex ea commodo consequat.`,
-  };
 
   const popularBlogs = [
     "React vs Angular: A Detailed Comparison",
@@ -34,15 +43,24 @@ const BlogDetailPage = () => {
           <div className="w-full md:w-3/4">
             <div className="bg-white shadow-md rounded-md overflow-hidden">
               <img
-                src={blog.image}
-                alt={blog.title}
-                className="w-full h-60 object-cover"
+                src={
+                  single_blog_data.image instanceof File
+                    ? URL.createObjectURL(single_blog_data.image) // Preview for new uploads
+                    : `${single_image_path}/${single_blog_data.image}` // Existing image path from server
+                }
+                alt="Uploaded preview"
+                className="mt-2 rounded border border-gray-300 shadow-sm"
+                style={{
+                  width: "100%", // Set desired width
+                  height: "100%", // Set desired height
+                  // objectFit: "cover", // Ensures image fits within the dimensions
+                }}
               />
               <div className="p-6">
                 <h1 className="text-3xl font-bold text-gray-800 mb-4">
-                  {blog.title}
+                  {single_blog_data.title}
                 </h1>
-                <p className="text-gray-600">{blog.content}</p>
+                <p className="text-gray-600">{single_blog_data.content}</p>
               </div>
             </div>
           </div>

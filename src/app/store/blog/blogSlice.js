@@ -14,11 +14,14 @@ const initialState = {
   message: null,
   error: null,
   data: [], // To store the list of messages
+  image_path: null,
   currentPage: 1, // Start at page 1 (instead of 0)
   lastPage: 1, // Set lastPage to 1 initially
   totalCount: 0, // Initialize totalCount as 0
   perPage: 10, // Set default perPage
   next_page_url: null,
+  single_blog_data: {},
+  single_image_path: null,
 };
 
 const blogSlice = createSlice({
@@ -60,6 +63,7 @@ const blogSlice = createSlice({
       state.lastPage = action.payload.data.blog.last_page;
       state.perPage = action.payload.data.blog.per_page;
       state.next_page_url = action.payload.data.blog.next_page_url;
+      state.image_path = action.payload.data.image_path;
     },
     fetchBlogFailure: (state, action) => {
       state.status = STATUS_FAILED;
@@ -106,6 +110,23 @@ const blogSlice = createSlice({
       state.status = STATUS_FAILED;
       state.error = action.payload || ERROR_MESSAGE_DEFAULT;
     },
+
+    // fetch single data detail
+    fetchSingleBlogRequest: (state, action) => {
+      state.status = STATUS_PENDING;
+      state.error = null;
+    },
+    fetchSingleBlogSuccess: (state, action) => {
+      state.status = STATUS_SUCCEEDED;
+      state.message = action.payload.blog;
+      state.single_blog_data = action.payload.data.blog;
+      state.single_image_path = action.payload.data.single_image_path;
+    },
+
+    fetchSingleBlogFailure: (state, action) => {
+      state.status = STATUS_FAILED;
+      state.error = action.payload || ERROR_MESSAGE_DEFAULT;
+    },
   },
 });
 
@@ -124,6 +145,9 @@ export const {
   updateBlogRequest,
   updateBlogSuccess,
   updateBlogFailure,
+  fetchSingleBlogRequest,
+  fetchSingleBlogSuccess,
+  fetchSingleBlogFailure,
 } = blogSlice.actions;
 
 export default blogSlice.reducer;

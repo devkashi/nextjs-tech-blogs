@@ -14,19 +14,32 @@ import {
   updateBlogRequest,
   updateBlogSuccess,
   updateBlogFailure,
+  fetchSingleBlogRequest,
+  fetchSingleBlogSuccess,
+  fetchSingleBlogFailure,
 } from "./blogSlice";
 
 function* sendBlogSaga(action) {
-  console.log("kashish dj", action.payload);
+  // console.log("kashish dj", action.payload);
 
   try {
-    console.log("sending api");
-
+    // Create a FormData object for image and text fields
+    const formData = new FormData();
+    formData.append("title", action.payload.title); // Replace 'title' with your text field key
+    formData.append("content", action.payload.content); // Replace 'content' with your text field key
+    formData.append("image", action.payload.image); // Replace 'image' with your file key
+    // console.log("formdata ", formData);
     const response = yield call(
       axios.post,
       "http://127.0.0.1:8000/api/create/blog",
-      action.payload
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data", // Required for file uploads
+        },
+      }
     );
+
     yield put(sendBlogSuccess(response.data));
   } catch (error) {
     yield put(
@@ -52,7 +65,7 @@ function* fetchBlogSaga(action) {
 }
 
 function* deleteBlogSaga(action) {
-  console.log("action.payload ", action.payload);
+  // console.log("action.payload ", action.payload);
   try {
     const response = yield call(
       axios.post,
@@ -68,12 +81,29 @@ function* deleteBlogSaga(action) {
 
 // update
 function* updateBlogSaga(action) {
+  console.log("action.payload ", action.payload);
   try {
+    // Create FormData object
+    const formData = new FormData();
+    formData.append("id", action.payload.id);
+    formData.append("title", action.payload.title); // Append text fields// Append text fields
+    formData.append("content", action.payload.content);
+    if (action.payload.image) {
+      formData.append("image", action.payload.image); // Append file if available
+    }
+
+    // API call with headers for multipart data
     const response = yield call(
       axios.post,
       `http://127.0.0.1:8000/api/update/blog`,
-      action.payload
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
     );
+
     yield put(
       updateBlogSuccess({ FormData: action.payload, ...response.data })
     );
@@ -83,6 +113,36 @@ function* updateBlogSaga(action) {
     );
   }
 }
+
+function* fetchSingleBlogSaga(action) {
+  console.log("action.payload ", action.payload);
+  try {
+    // Create FormData object
+    const formData = new FormData();
+    formData.append("id", action.payload);
+
+    // API call with headers for multipart data
+    const response = yield call(
+      axios.post,
+      `http://127.0.0.1:8000/api/fetch/single-blog`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    yield put(fetchSingleBlogSuccess(response.data));
+  } catch (error) {
+    yield put(
+      fetchSingleBlogFailure(
+        error.response?.data?.Blog || "Failed to fetch Blog"
+      )
+    );
+  }
+}
+
 // Watcher Saga for the send Blog request
 function* watchSendBlog() {
   yield takeEvery(sendBlogRequest.type, sendBlogSaga);
@@ -99,11 +159,15 @@ function* watchDeleteBlogs() {
 function* watchUpdateBlogs() {
   yield takeEvery(updateBlogRequest.type, updateBlogSaga);
 }
+function* watchFetchSingleBlogs() {
+  yield takeEvery(fetchSingleBlogRequest.type, fetchSingleBlogSaga);
+}
 export default function* blogSaga() {
   yield all([
     watchSendBlog(),
     watchFetchBlog(),
     watchDeleteBlogs(),
     watchUpdateBlogs(),
+    watchFetchSingleBlogs(),
   ]);
 }
