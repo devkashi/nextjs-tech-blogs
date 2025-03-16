@@ -15,13 +15,9 @@ const BlogDetailPage = () => {
   } = useSelector((state) => state.blog);
 
   const { id } = useParams(); // Get the dynamic 'id' parameter
-  console.log("id ", id);
-  console.log("single_image_path ", single_image_path);
-  console.log("single_blog_data ", single_blog_data);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("single id ", id);
     dispatch(fetchSingleBlogRequest(id));
   }, [dispatch, id]);
   // Sample blog data (to be fetched dynamically in a real scenario)
@@ -45,17 +41,23 @@ const BlogDetailPage = () => {
               <img
                 src={
                   single_blog_data.image instanceof File
-                    ? URL.createObjectURL(single_blog_data.image) // Preview for new uploads
-                    : `${single_image_path}/${single_blog_data.image}` // Existing image path from server
+                    ? URL.createObjectURL(single_blog_data.image)
+                    : `${single_image_path}/${single_blog_data.image}`
                 }
                 alt="Uploaded preview"
                 className="mt-2 rounded border border-gray-300 shadow-sm"
-                style={{
-                  width: "100%", // Set desired width
-                  height: "100%", // Set desired height
-                  // objectFit: "cover", // Ensures image fits within the dimensions
-                }}
+                style={{ width: "100%", height: "100%" }}
               />
+              <div className="flex items-center p-4">
+                <button className="text-red-500 hover:text-white-700">
+                  ❤️
+                </button>
+                <input
+                  type="text"
+                  placeholder="Add a comment..."
+                  className="ml-4 w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
               <div className="p-6">
                 <h1 className="text-3xl font-bold text-gray-800 mb-4">
                   {single_blog_data.title}
